@@ -1,5 +1,5 @@
-# YT2AFF script
-Nothing fancy, just a simple intermediate script for converting youtube videos to audio file formats set to your directory. <br>
+# AFF conversion script
+Nothing fancy, just a simple intermediate script for converting youtube and soundcloud playlists and videos to audio file formats set to your directory. <br>
 <hr>
 
 > [!NOTE]
