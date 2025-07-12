@@ -3,8 +3,8 @@ Nothing fancy, just a simple intermediate script for converting youtube and soun
 <hr>
 
 > [!NOTE]
-> This script is still under construction and will not be like that for too long. <br>
-> Security + bugs + compile fixes will be done soon with more functionality. <br>
+> This script is still under incomplete construction, it is usable though for daily use - yes.
+> Bugs + compile fixes will be done soon with more functionality such as removal and stuff. <br>
 
 <hr>
 
