@@ -4,31 +4,32 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
+#include <filesystem>
+#include <algorithm>
 
 using namespace std;
+namespace fs = std::filesystem;
 
-[[ maybe_unused ]] volatile int errorCount = 100;                       // why is this line even a thing
 vector<std::string> supportedAudioFormats = { "mp3", "wav", "flac", "aac", "ogg", "m4a" };
 
 bool isTheFormatSupported(const string &format) {
-    for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) {   // didnt know this was possible LOL
-        if (format == supportedAudioFormats[inc]) {                     // if its a valid format from sAF[] -> correct
+    for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) {
+        if (format == supportedAudioFormats[inc]) {
             return true;
         }
     }
-    return false;                                                       // return NULL; doesnt work
+    return false;
 }
 
 bool checkDependenciesInstallation() {
 
-    // system(<cmd_here>); will actually run it in terminal and comply conditional[s] accordingly
     // check for yt-dlp
-
     if (system("which yt-dlp > /dev/null 2>&1") != 0) {
         cout << "[Error]: yt-dlp is not installed or not in PATH\n";
         cout << "Install with: pip install yt-dlp\n";
         return false;
     }
+    
     // check for ffmpeg
     if (system("which ffmpeg > /dev/null 2>&1") != 0) {
         cout << "[Error]: ffmpeg is not installed or not set in correct path for execution\n";
@@ -39,79 +40,143 @@ bool checkDependenciesInstallation() {
     return true;
 }
 
-int main(int argc, char **argv) {
-    if (argc != 3) {
-        cout << std::endl;
-        cout << "[Usage]: " << argv[0] << " <youtubeURL> <format>\n";
-        cout << "\n[Supported formats]: \n";
-        for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) {
-            cout << "-> [" << supportedAudioFormats[inc] << "]\n";
+// how 2 check if its a playlist and how to make files for it?
+// playlist -> yt
+// sets -> sc
+// list
+
+bool isPlaylistURL(const string &url) {
+    return (url.find("playlist") != string::npos ||     // youtube
+            url.find("&list=") != string::npos ||       
+            url.find("?list=") != string::npos ||
+            url.find("/sets/") != string::npos);        // soundcloud
+}
+
+string createOrGetDownloadFolder(const string &customPath = "") {
+    string downloadPath;
+    
+    if (!customPath.empty()) {                          // if [!empty]
+        downloadPath = customPath;
+    } else {
+        
+        // check if downloads -> in current dir
+        downloadPath = "./downloads";
+        if (!fs::exists(downloadPath)) {  // if !exists(pathToDOwnload)
+            cout << "[Info]: Creating downloads folder in current directory\n";
+
+            // try to create a folder -> if yes -> pog
+            // !attemptToCreateFolder -> catch (const fs::filesystem_error& ) whatever this shit is
+            try {
+                fs::create_directory(downloadPath); // create dir in current dir instead because we cool like that
+            } catch (const fs::filesystem_error& e) {
+                cout << "[Warning]: could not create downloads folder (dir usage: current)\n";
+                downloadPath = ".";
+            }
         }
-        cout << "\n";
-        cout << "[Example]: " << argv[0] << " https://www.youtube.com/watch?v=dQw4w9WgXcQ <put_ur_file_format_here>\n";
-                                              // RICKROLL LMFAO
+    }
+
+    if (!fs::exists(downloadPath)) {
+        cout << "[Error]: Specified download path does not exist: " << downloadPath << "\n";
+        return "";
+    }
+    
+    return downloadPath;
+}
+
+void printUsage(const char* programName) {
+    cout << "\n[Usage]: " << programName << " <URL> <format> [download_folder]\n";
+    cout << "\n[Supported formats]: \n";
+    for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) {
+        cout << "-> [" << supportedAudioFormats[inc] << "]\n";
+    }
+    cout << "\n[Supported platforms]: YouTube, SoundCloud (Spotify not supported due to DRM)\n";
+    cout << "\n[Examples]:\n";
+    cout << "  Single video: " << programName << " https://www.youtube.com/watch?v=dQw4w9WgXcQ mp3\n";
+    cout << "  Playlist: " << programName << " https://www.youtube.com/playlist?list=PLxxxxxxx mp3\n";
+    cout << "  Custom folder: " << programName << " https://youtu.be/example mp3 /path/to/folder\n";
+    cout << "  SoundCloud: " << programName << " https://soundcloud.com/user/track mp3\n\n";
+}
+
+int main(int argc, char **argv) {
+    if (argc < 3 || argc > 4) {
+        printUsage(argv[0]);
         return EXIT_FAILURE;
     }
 
-    const string youtubeURL = argv[1];
-
-    if (sizeof(youtubeURL) > 0x400) {
-        std::cout << "\n\ntoo many characters, overflow conduction | terminating program\n\n";
-
-        return EXIT_FAILURE;
-    }
-
+    const std::string url = argv[1];
     const std::string format = argv[2];
+    const std::string customFolder = (argc == 4) ? argv[3] : "";
 
-    if (sizeof(format) > 5) {
-        std::cout << "\n\ntoo many characters, overflow conduction | terminating program\n\n";
+    // conditionals
 
+    if (url.length() > 0x400) {
+        std::cout << "\n\n[Error]: too many characters in [URL], overflow protection | terminating program\n\n";
+        return EXIT_FAILURE;
+    }
+
+    if (format.length() > 5) {
+        std::cout << "\n\n[Error]: too many characters in [FORMAT], overflow protection | terminating program\n\n";
         return EXIT_FAILURE;
     }
 
     if (!isTheFormatSupported(format)) {
-        std::cerr << "[Error " << errorCount << "]: unsupported format [" << format << "]\n";
-
-        errorCount += 1;
-
-        cout << "\n";
-        cout << "[Usage]: " << argv[0] << " <youtubeURL> <format>\n";
-        cout << "[Supported formats]: ";
-        for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) {
-            cout << "[" << supportedAudioFormats[inc] << "]\n";
-        }
-        cout << "\n";
-        cout << "[Example]: " << argv[0] << " https://youtu.be/Vqhv-OisoMU?si=MbPOazgla7AAxoOY mp3/wav/ogg/supported_format\n";
-                                              // goodnight ojousama
+        std::cerr << "[Error]: unsupported format [" << format << "]\n";
+        printUsage(argv[0]);
         return EXIT_FAILURE;
     }
 
-    if (!checkDependenciesInstallation()) { // {{ checkDependenciesInstallation() == NULL }} is invalid since int -> pointer NULL
-        std::cerr << "[Error]: dependencies not properly installed there";
+    if (!checkDependenciesInstallation()) {
+        std::cerr << "[Error]: dependencies not properly installed or not set properly in (path)\n";
         return EXIT_FAILURE;
     }
 
-    char actualCommand[0x400];                                  // 1024 but hex for no apparent reason (looks cool)
-    snprintf(actualCommand
-        ,sizeof(actualCommand)
-        ,"yt-dlp --extract-audio --audio-format %s --output \"%%(title)s.%%(ext)s\" \"%s\"" // MAIN COMMAND
-        ,format.c_str(), youtubeURL.c_str());
-                                                                // snprintf is actually awesome
+    string downloadPath = createOrGetDownloadFolder(customFolder);
+    if (downloadPath.empty()) {
+        return EXIT_FAILURE;
+    }
 
-    cout << "\n\nAudio extraction URL [YT only pls]: [" << youtubeURL << "]\n";
-    cout << "Audio extraction file format: [" << format << "]\n";
+    // if it is a playlist?
+    bool isPlaylist = isPlaylistURL(url);
+    
+    char actualCommand[0x800];
+    if (isPlaylist) {
+
+        // playlist download command
+        snprintf(actualCommand, sizeof(actualCommand),
+            "yt-dlp --extract-audio --audio-format %s --output \"%s/%%(playlist_index)s - %%(title)s.%%(ext)s\" \"%s\"",
+            format.c_str(), downloadPath.c_str(), url.c_str());
+        
+        cout << "\n[PLAYLIST MODE DETECTED]\n";
+        cout << "Download URL: [" << url << "]\n";
+        cout << "Audio format: [" << format << "]\n";
+        cout << "Download folder: [" << downloadPath << "]\n";
+        cout << "Files will be numbered by playlist order\n";
+    } else {
+
+        // single track download command
+        snprintf(actualCommand, sizeof(actualCommand),
+            "yt-dlp --extract-audio --audio-format %s --output \"%s/%%(title)s.%%(ext)s\" \"%s\"",
+            format.c_str(), downloadPath.c_str(), url.c_str());
+        
+        cout << "\n[SINGLE TRACK MODE]\n";
+        cout << "Download URL: [" << url << "]\n";
+        cout << "Audio format: [" << format << "]\n";
+        cout << "Download folder: [" << downloadPath << "]\n";
+    }
+
     cout << "\n[Running cmd]: [" << actualCommand << "]\n\n";
 
-    int resultVal = system(actualCommand);                      // runs the cmd in terminal
+    int resultVal = system(actualCommand);
     if (resultVal == 0) {
-        cout << "\n[Command execution = SUCCESS]: extracted audio in current directory path\n\n";
+        cout << "\n[SUCCESS]: Audio extraction completed in: " << downloadPath << "\n\n";
     } else {
-        cout << "\n\n[Error]: Audio extraction failure | (exit code: " << resultVal << ")\n\n";
+        cout << "\n\n[Error]: Audio extraction failure | (exit code: " << resultVal << ")\n";
+        cout << "Common issues:\n";
+        cout << "- Invalid URL or private/restricted content\n";
+        cout << "- Network connectivity issues\n";
+        cout << "- Insufficient permissions for download folder\n\n";
         return 1;
     }
-
-    // (resultVal == 0) ? printf("[Command execution = SUCCESS]: extracted audio\n")
-    //                  : printf("[Error]: Audio extraction failure | (exit code: %d)\n", resultVal);
 
     return EXIT_SUCCESS;
 }
