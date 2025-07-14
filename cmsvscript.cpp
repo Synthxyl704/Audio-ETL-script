@@ -83,7 +83,7 @@ string createOrGetDownloadFolder(const string &customPath = "") {
     return downloadPath;
 }
 
-void printUsage(const char* programName) {
+void printUsage(const char *programName) {
     cout << "\n[Usage]: " << programName << " <URL> <format> [download_folder]\n";
     cout << "\n[Supported formats]: \n";
     for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) {
@@ -93,7 +93,7 @@ void printUsage(const char* programName) {
     cout << "\n[Examples]:\n";
     cout << "  Single video: " << programName << " https://www.youtube.com/watch?v=dQw4w9WgXcQ mp3\n";
     cout << "  Playlist: " << programName << " https://www.youtube.com/playlist?list=PLxxxxxxx mp3\n";
-    cout << "  Custom folder: " << programName << " https://youtu.be/example mp3 /path/to/folder\n";
+    cout << "  Custom folder: " << programName << " https://youtu.be/example mp3 /path/to/folder_or_directory\n";
     cout << "  SoundCloud: " << programName << " https://soundcloud.com/user/track mp3\n\n";
 }
 
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
             "yt-dlp --extract-audio --audio-format %s --output \"%s/%%(playlist_index)s - %%(title)s.%%(ext)s\" \"%s\"",
             format.c_str(), downloadPath.c_str(), url.c_str());
         
-        cout << "\n[PLAYLIST MODE DETECTED]\n";
+        cout << "\n[PLAYLIST URL DETECTED]\n";
         cout << "Download URL: [" << url << "]\n";
         cout << "Audio format: [" << format << "]\n";
         cout << "Download folder: [" << downloadPath << "]\n";
@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
     } else {
         cout << "\n\n[Error]: Audio extraction failure | (exit code: " << resultVal << ")\n";
         cout << "Common issues:\n";
-        cout << "- Invalid URL or private/restricted content\n";
+        cout << "- Invalid URL or private/restricted content [DRM]\n";
         cout << "- Network connectivity issues\n";
         cout << "- Insufficient permissions for download folder\n\n";
         return 1;
