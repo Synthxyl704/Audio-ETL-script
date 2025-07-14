@@ -3,7 +3,7 @@ Nothing fancy, just a simple intermediate script for converting youtube and soun
 <hr>
 
 > [!NOTE]
-> This script is still under incomplete construction, it is usable though for daily use - yes.
+> This script is still under incomplete construction, it is usable though for daily use - yes. <br>
 > Bugs + compile fixes will be done soon with more functionality such as removal and stuff. <br>
 
 <hr>
