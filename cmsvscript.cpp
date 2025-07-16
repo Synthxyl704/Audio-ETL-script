@@ -121,7 +121,7 @@ string getReadableFileSize(uintmax_t bytes) {
 
 // List all downloaded songs in the specified directory
 void listDownloadedSongs(const string &downloadPath) {
-    cout << "\n[DOWNLOADED SONGS] in: " << downloadPath << "]\n";
+    cout << "\n[DOWNLOADED SONGS in]: " << downloadPath << "]\n";
     cout << "========================================\n";
     
     vector<SongInfo> songs;
@@ -184,7 +184,7 @@ void listDownloadedSongs(const string &downloadPath) {
 // add metadata, removal
 void printUsage(const char *programName) {
     cout << "\n[Usage]: " << programName << " <URL> <format> [download_folder]\n";
-    cout << "     OR: " << programName << " --list [download_folder]\n";
+    cout << "     OR: " << programName << " -smlist [download_folder]\n";
     cout << "\n[Supported formats]: \n";
     for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) {
         cout << "-> [" << supportedAudioFormats[inc] << "]\n";
@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
 
     string firstArg = argv[1];
     
-    if (firstArg == "-songlist") {
+    if (firstArg == "-smlist") {
         string downloadPath = (argc == 3) ? argv[2] : "";
 
         downloadPath = createOrGetDownloadFolder(downloadPath);
@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
         listDownloadedSongs(downloadPath);
 
        return EXIT_SUCCESS;
-    } else if (firstArg == "argvlist") { // will remove this later
+    } else if (firstArg == "argvlist") {
         for(int inc = 0; inc < argc; inc += 1) {
             std::cout << "argv[" << inc << "]: " << argv[inc] << std::endl;
         }
