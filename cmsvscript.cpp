@@ -121,7 +121,7 @@ string getReadableFileSize(uintmax_t bytes) {
 
 // List all downloaded songs in the specified directory
 void listDownloadedSongs(const string &downloadPath) {
-    cout << "\n[DOWNLOADED SONGS in: " << downloadPath << "]\n";
+    cout << "\n[DOWNLOADED SONGS] in: " << downloadPath << "]\n";
     cout << "========================================\n";
     
     vector<SongInfo> songs;
