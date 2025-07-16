@@ -83,6 +83,14 @@ string createOrGetDownloadFolder(const string &customPath = "") {
     return downloadPath;
 }
 
+struct SongInfo {
+    string filename;
+    string fullPath;
+    string format;
+    uintmax_t fileSize;
+    string lastModified;
+};
+
 void printUsage(const char *programName) {
     cout << "\n[Usage]: " << programName << " <URL> <format> [download_folder]\n";
     cout << "\n[Supported formats]: \n";
