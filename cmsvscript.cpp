@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
 
     string firstArg = argv[1];
     
-    if (firstArg == "--list") {
+    if (firstArg == "-songlist") {
         string downloadPath = (argc == 3) ? argv[2] : "";
 
         downloadPath = createOrGetDownloadFolder(downloadPath);
@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
         listDownloadedSongs(downloadPath);
 
        return EXIT_SUCCESS;
-    } else if (firstArg == "argvlist") {
+    } else if (firstArg == "argvlist") { // will remove this later
         for(int inc = 0; inc < argc; inc += 1) {
             std::cout << "argv[" << inc << "]: " << argv[inc] << std::endl;
         }
