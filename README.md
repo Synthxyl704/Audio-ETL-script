@@ -24,7 +24,7 @@ Terminal compilation guide:
 
 ## UPD/RR logs:
 
--> `-smlist` listed dates may be incorrect at times for certain/random songs. [ (Highly unlikely) ]
+-> `-smlist` listed dates may be incorrect at times for certain/random songs. [ !Highly unlikely! ]
 
 ## License
 
