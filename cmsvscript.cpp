@@ -121,8 +121,12 @@ string getReadableFileSize(uintmax_t bytes) {
 
 // List all downloaded songs in the specified directory
 void listDownloadedSongs(const string &downloadPath) {
-    cout << "\n[DOWNLOADED SONGS in]: " << downloadPath << "]\n";
-    cout << "========================================\n";
+    cout << "\n[DOWNLOADED SONGS IN DIRECTORY]: " << downloadPath << "\n";
+    for (int inc = 0; inc < 33 + downloadPath.size(); inc += 1) {
+        std::cout << "=";
+    }
+
+    std::cout << "\n\n";
     
     vector<SongInfo> songs;
 
@@ -197,7 +201,7 @@ void printUsage(const char *programName) {
     cout << "  SoundCloud: " << programName << " https://soundcloud.com/user/track mp3\n";
     cout << std::endl;
     cout << "Utilitary command(s): " << std::endl; // CHANGE THIS WHEN YOU ADD OTHER UTIL CMDS
-    cout << "  List songs: " << programName << " --list\n";
+    cout << "  List songs: " << programName << " -smlist\n";
 }
 
 int main(int argc, char **argv) {
