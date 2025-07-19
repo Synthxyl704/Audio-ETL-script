@@ -12,7 +12,7 @@ Nothing fancy, just a simple intermediate script for converting youtube and soun
 
 Clone the project using this cmd in bash:
 ```bash
-git clone https://github.com/Synthxyl704/YT-2-AFF-script
+git clone https://github.com/Synthxyl704/AFF-Conv-TUI-script
 ```
 
 Terminal compilation guide:
