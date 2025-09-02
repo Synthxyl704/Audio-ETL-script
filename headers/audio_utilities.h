@@ -1,5 +1,5 @@
-#ifndef AUDIO_UTILITIES_H
-#define AUDIO_UTILITIES_H
+#ifndef HEADERS_AUDIO_UTILITIES_H
+#define HEADERS_AUDIO_UTILITIES_H
 
 #include <string>
 #include <vector>
