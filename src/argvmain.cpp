@@ -3,22 +3,24 @@
 #include <cstdlib>
 #include <cstdio>
 #include <array>
+#include <memory>
+#include <sstream>
 
-#include "audio_utilities.h"
-#include "dependency.h"
-#include "url_utilities.h"
-#include "file_manager.h"
-#include "song_manager.h"
-#include "metadata.h"
-#include "usage_helper.h"
+#include "headers/audio_utilities.h"
+#include "headers/dependency.h"
+#include "headers/url_utilities.h"
+#include "headers/file_manager.h"
+#include "headers/song_manager.h"
+#include "headers/metadata.h"
+#include "headers/usage_helper.h"
 
-#include "audio_utilities.cpp"
-#include "dependency.cpp"
-#include "url_utilities.cpp"
-#include "file_manager.cpp"
-#include "song_manager.cpp"
-#include "metadata.cpp"
-#include "usage_helper.cpp"
+// #include "audio_utilities.cpp"
+// #include "dependency.cpp"
+// #include "url_utilities.cpp"
+// #include "file_manager.cpp"
+// #include "song_manager.cpp"
+// #include "metadata.cpp"
+// #include "usage_helper.cpp"
 
 using namespace std; // im sorry
 
@@ -199,31 +201,31 @@ int main(int argc, char **argv) {
 
     // const std::string commandForRedundancyCheck = argv[1]; // url     
 
-    std::string metadataCmd = "yt-dlp --no-warnings --print \"%(title)s|%(artist)s|%(duration)s\" \"" + url + "\"";
-    std::string metadataOutput = execCommand(metadataCmd);
-    
-    std::istringstream metaStream(metadataOutput);
-    std::string metaLine;
-    std::getline(metaStream, metaLine);  // Only the first line matters
-    std::vector<std::string> metaFields = split(metaLine, '|');
-    
-    std::string title = "(unknown)";
-    std::string artist = "(unknown)";
-    std::string duration = "(unknown)";
-    
-    if (metaFields.size() >= 3) {
-        title = metaFields[0];
-        artist = !metaFields[1].empty() ? metaFields[1] : "(unknown)";
-        duration = metaFields[2];
-    } else {
-        std::cerr << "[Warning]: Could not extract complete metadata for URL.\n";
-    }
-    
-    cout << "\n=== [TRACK METADATA] ===\n";
-    cout << "Title   : " << title << "\n";
-    cout << "Artist  : " << artist << "\n";
-    cout << "Duration: " << duration << " seconds\n";
-    cout << "========================\n";
+std::string metadataCmd = "yt-dlp --no-warnings --print \"%(title)s|%(artist)s|%(duration)s\" \"" + url + "\"";
+std::string metadataOutput = execCommand(metadataCmd);
+
+std::istringstream metaStream(metadataOutput);
+std::string metaLine;
+std::getline(metaStream, metaLine);  // Only the first line matters
+std::vector<std::string> metaFields = split(metaLine, '|');
+
+std::string title = "(unknown)";
+std::string artist = "(unknown)";
+std::string duration = "(unknown)";
+
+if (metaFields.size() >= 3) {
+    title = metaFields[0];
+    artist = !metaFields[1].empty() ? metaFields[1] : "(unknown)";
+    duration = metaFields[2];
+} else {
+    std::cerr << "[Warning]: Could not extract complete metadata for URL.\n";
+}
+
+cout << "\n=== [TRACK METADATA] ===\n";
+cout << "Title   : " << title << "\n";
+cout << "Artist  : " << artist << "\n";
+cout << "Duration: " << duration << " seconds\n";
+cout << "========================\n";
 
     // ============== END OF CHECKING THINGS ==============
 
@@ -232,7 +234,6 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    // if not empty, check the dpath
     isSongRedundant(downloadPath, title); 
 
     // if it is a playlist?
