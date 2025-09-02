@@ -20,7 +20,7 @@ CMake guide (simple, execute sequentially if you wish to)
 -> cd <directory of storage>
 -> mkdir build
 -> cd build
--> CMake ..
+-> cmake ..
 -> make
 -> <execute target main file, may be different than just "main">
 ```
