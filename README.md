@@ -61,6 +61,7 @@ if the `argv[3]` is not specified, it will auto create a "downloads" named folde
 ```
 
 <hr>
+
 ## UPD/RR logs:
 
 -> 02/09/25 [FIXED] | `-smlist` listed dates may be incorrect at times for certain/random songs. [ !Highly unlikely! ]
