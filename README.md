@@ -3,7 +3,7 @@ Nothing fancy, just a simple intermediate ETL-type script for converting youtube
 <hr>
 
 > [!NOTE]
-> This script is mostly done with what it is supposed to do, please do message me bugs/any tweaks to make, if I am alive i will definitely respond to you back. <br>
+> This script is mostly done with what it is supposed to do, please do message me bugs/any tweaks to make, if I am alive I will definitely respond to you back. <br>
 > Some more fun features will still be added as passion features because I honestly had a lot of fun making this. <br>
 
 <hr>
