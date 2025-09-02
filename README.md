@@ -15,13 +15,13 @@ Clone the project using this cmd in bash:
 git clone https://github.com/Synthxyl704/Audio-ETL-script
 ```
 
-CMake guide (simple)
+CMake guide (simple, execute sequentially if you wish to)
 ```
 -> cd <directory of storage>
 -> mkdir build
 -> cd build
--> run 'CMake ..'
--> run 'make'
+-> CMake ..
+-> make
 -> <execute target main file, may be different than just "main">
 ```
 
