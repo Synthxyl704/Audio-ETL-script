@@ -32,7 +32,7 @@ Terminal compilation guide:
 -> ./main <link_to_youtube_urlL> <audio_file_format>
 ```
 
-## Commands usage ancilliary:
+## Commands usage exposition:
 1. Downloading a song/music/playlist -
 ```
 ./main <link to the video/music/playlist> <format> <custom folder/directory>
