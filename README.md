@@ -1,5 +1,5 @@
 # AFF ETL script
-Nothing fancy, just a simple intermediate script for converting youtube, soundcloud & more playlists and videos to audio file formats set to your directory. <br>
+Nothing fancy, just a simple intermediate ETL-type script for converting youtube, soundcloud & more playlists and videos to audio file formats set to your directory. <br>
 <hr>
 
 > [!NOTE]
