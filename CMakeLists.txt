@@ -34,9 +34,17 @@ elseif(APPLE)
 endif()
 
 # sources executable (doesnt work for custom!)
-add_executable(argvmain argvmain.cpp)
 
-target_include_directories(argvmain PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# add_executable(argvmain argvmain.cpp)
+# add_executable(argvmain src/argvmain.cpp src/audio_utilities.cpp src/dependency.cpp src/url_utilities.cpp src/file_manager.cpp src/song_manager.cpp src/metadata.cpp src/usage_helper.cpp)
+add_executable(argvmain src/argvmain.cpp src/audio_utilities.cpp src/dependency.cpp src/url_utilities.cpp src/file_manager.cpp src/song_manager.cpp src/metadata.cpp src/usage_helper.cpp)
+
+# add_executable(main src/argvmain.cpp src/audio_utilities.cpp src/dependency.cpp src/url_utilities.cpp src/file_manager.cpp src/song_manager.cpp src/metadata.cpp src/usage_helper.cpp)
+
+# target_include_directories(argvmain PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(argvmain PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/headers)
+
+# target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/headers)
 
 # pplatform libraries
 if(WIN32)
