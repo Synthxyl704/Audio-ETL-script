@@ -8,7 +8,7 @@ Nothing fancy, just a simple intermediate ETL-type script for converting youtube
 
 <hr>
 
-## Run Locally
+## RTU - Run Locally
 
 Clone the project using this cmd in bash:
 ```bash
@@ -28,7 +28,7 @@ CMake guide (simple, execute sequentially if you wish to)
 Terminal compilation guide:
 ```
 -> cd <directory of storage>
--> gcc argvmain.c -o main
+-> g++ -I. -Iheaders src/argvmain.cpp src/audio_utilities.cpp src/dependency.cpp src/url_utilities.cpp src/file_manager.cpp src/song_manager.cpp src/metadata.cpp src/usage_helper.cpp -o argvmain
 -> ./main <link_to_youtube_urlL> <audio_file_format>
 ```
 
