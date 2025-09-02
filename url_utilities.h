@@ -1,5 +1,5 @@
-#ifndef URL_UTILITIES_H
-#define URL_UTILITIES_H
+#ifndef HEADERS_URL_UTILITIES_H
+#define HEADERS_URL_UTILITIES_H
 
 #include <string>
 
