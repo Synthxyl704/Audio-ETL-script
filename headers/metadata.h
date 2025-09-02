@@ -1,5 +1,5 @@
-#ifndef METADATA_H
-#define METADATA_H
+#ifndef HEADERS_METADATA_H
+#define HEADERS_METADATA_H
 
 #include <string>
 
