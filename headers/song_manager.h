@@ -1,5 +1,5 @@
-#ifndef SONG_MANAGER_H
-#define SONG_MANAGER_H
+#ifndef HEADERS_SONG_MANAGER_H
+#define HEADERS_SONG_MANAGER_H
 
 #include <string>
 
