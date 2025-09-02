@@ -67,7 +67,7 @@ if the `argv[3]` is not specified, it will auto create a "downloads" named folde
 -> 02/09/25 [FIXED] | `-smlist` listed dates may be incorrect at times for certain/random songs. [ !Highly unlikely! ] <br>
 -> `-LFI_t` is restricted to only showing you the detailed version of directory metadata, anything else that isnt 't' will automatically show you the non-detailed version.
 > [!NOTE]
-> (note: if you wish for this flexibility truncation, please uncomment the conditional code block (~line 135) in `argvmain.cpp` and comment/remove the standard refactor.
+> If you wish for this flexibility truncation, please uncomment the conditional code block (~line 135) in `argvmain.cpp` and comment/remove the standard refactor.
 
 ## License
 
