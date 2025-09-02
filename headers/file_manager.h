@@ -1,5 +1,5 @@
-#ifndef FILE_MANAGER_H
-#define FILE_MANAGER_H
+#ifndef HEADERS_FILE_MANAGER_H
+#define HEADERS_FILE_MANAGER_H
 
 #include <string>
 #include <vector>
