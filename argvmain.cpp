@@ -199,31 +199,31 @@ int main(int argc, char **argv) {
 
     // const std::string commandForRedundancyCheck = argv[1]; // url     
 
-std::string metadataCmd = "yt-dlp --no-warnings --print \"%(title)s|%(artist)s|%(duration)s\" \"" + url + "\"";
-std::string metadataOutput = execCommand(metadataCmd);
-
-std::istringstream metaStream(metadataOutput);
-std::string metaLine;
-std::getline(metaStream, metaLine);  // Only the first line matters
-std::vector<std::string> metaFields = split(metaLine, '|');
-
-std::string title = "(unknown)";
-std::string artist = "(unknown)";
-std::string duration = "(unknown)";
-
-if (metaFields.size() >= 3) {
-    title = metaFields[0];
-    artist = !metaFields[1].empty() ? metaFields[1] : "(unknown)";
-    duration = metaFields[2];
-} else {
-    std::cerr << "[Warning]: Could not extract complete metadata for URL.\n";
-}
-
-cout << "\n=== [TRACK METADATA] ===\n";
-cout << "Title   : " << title << "\n";
-cout << "Artist  : " << artist << "\n";
-cout << "Duration: " << duration << " seconds\n";
-cout << "========================\n";
+    std::string metadataCmd = "yt-dlp --no-warnings --print \"%(title)s|%(artist)s|%(duration)s\" \"" + url + "\"";
+    std::string metadataOutput = execCommand(metadataCmd);
+    
+    std::istringstream metaStream(metadataOutput);
+    std::string metaLine;
+    std::getline(metaStream, metaLine);  // Only the first line matters
+    std::vector<std::string> metaFields = split(metaLine, '|');
+    
+    std::string title = "(unknown)";
+    std::string artist = "(unknown)";
+    std::string duration = "(unknown)";
+    
+    if (metaFields.size() >= 3) {
+        title = metaFields[0];
+        artist = !metaFields[1].empty() ? metaFields[1] : "(unknown)";
+        duration = metaFields[2];
+    } else {
+        std::cerr << "[Warning]: Could not extract complete metadata for URL.\n";
+    }
+    
+    cout << "\n=== [TRACK METADATA] ===\n";
+    cout << "Title   : " << title << "\n";
+    cout << "Artist  : " << artist << "\n";
+    cout << "Duration: " << duration << " seconds\n";
+    cout << "========================\n";
 
     // ============== END OF CHECKING THINGS ==============
 
@@ -232,6 +232,7 @@ cout << "========================\n";
         return EXIT_FAILURE;
     }
 
+    // if not empty, check the dpath
     isSongRedundant(downloadPath, title); 
 
     // if it is a playlist?
