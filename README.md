@@ -35,7 +35,7 @@ Terminal compilation guide:
 ## Commands usage exposition:
 1. Downloading a song/music/playlist -
 ```
-./main <link to the video/music/playlist> <format> <custom folder/directory>
+./main <link to the video/music/playlist> <format> <(optional) custom folder/directory>
 ```
 if the `argv[3]` is not specified, it will auto create a "downloads" named folder and download it there, wont just download anywhere or in the program itself.
 
