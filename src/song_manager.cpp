@@ -41,7 +41,7 @@ void isSongRedundant(const string &downloadPath, const string &songTitle) {
         }
 
         if (matchingTitle.empty()) {
-            std::cout << "\n[PROG_FLAG_REDUNDANT]: No redunant song found, good to go!!!";
+            std::cout << "\n[PROG_FLAG_REDUNDANT]: No redundant song found, good to go!!!";
         } else {
             std::cout << "\n[PROG_FLAG_REDUNDANT]: A song(s) with similar name/title found in your dir/folder: ";
             for (const auto &path : matchingTitle) {
