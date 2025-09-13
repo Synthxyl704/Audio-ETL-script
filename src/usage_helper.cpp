@@ -43,3 +43,5 @@ void printUsage(const char *programName) {
     cout << "Show detail (set) file data: " << programName << " -LFI_t";
     cout << "Show undetailed (set) file data: " << programName << " -LFI_f";
 }
+
+// i shouldnt have allocated an entire header for this...
