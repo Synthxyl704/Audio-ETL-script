@@ -60,10 +60,16 @@ int main(int argc, char **argv) {
 
     // =============== MAIN ARGV HANDLING ===============
 
-    // CURRENT FEATS!!!
+    // FEATS!!!
     // -> | -smlist 
     // -> | -rem 
     // -> | -metamsc
+    // -> | -remul? (i wrote the f(x) for it, need name for first argument)
+
+    // -x_ver_i_wanna_add-
+    // -> | -transmux
+    // -> | -demux? 
+    // -> | -transcode
 
     // TODO: change this later for argv[3+] integration somehow, parse tree?
     //       make it a cli?
@@ -99,6 +105,25 @@ int main(int argc, char **argv) {
 
         removeSong(downloadPath);
         return EXIT_SUCCESS;
+    }
+
+    // void removeMultipleSongs(const std::string &downloadPath);
+
+    if (firstArg == "-remMul") {
+        string downloadPath = (argc >= 3) ? argv[2] : "";
+        downloadPath = createOrGetDownloadFolder(downloadPath);
+
+
+        if (downloadPath.empty()) {
+            return EXIT_FAILURE;
+            // std::exit(EXIT_FAILURE);
+        }
+
+        removeMultipleSongs(downloadPath);
+
+        // if (!removeMultipleSongs || /* removeMultipleSongs == NULL */) {
+            // return EXIT_FAILURE;
+        // }
     }
     
     if (firstArg == "-metamsc") {
