@@ -3,4 +3,4 @@
 
 void printUsage(const char *programName);
 
-#endif // USAGE_HELPER_H
+#endif 
