@@ -14,4 +14,7 @@ void listDownloadedSongs(const std::string &downloadPath);
 void removeSong(const std::string &downloadPath);
 
 void isSongRedundant(const std::string &downloadPath, const std::string &songTitle);
-#endif
+
+void removeMultipleSongs(const std::string &downloadPath);
+
+#endif 
