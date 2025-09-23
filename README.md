@@ -69,6 +69,11 @@ if the `argv[3]` is not specified, it will auto create a "downloads" named folde
 > [!NOTE]
 > If you wish for this flexibility truncation, please uncomment the conditional code block (~line 135) in `argvmain.cpp` and comment/remove the standard refactor.
 
+## P-TODO: <br> 
+-> Add codec remuxing/transcode to another codec as per user wants, might be the entire file? or one song, or multiple? <br> 
+-> Allow the user to delete multiple songs at once, too much time consuming with only 1/manual deletion <br> 
+-> Maybe improve aesthetics on menu, idk how to do that though
+
 ## License
 
 [CC 4.0]([https://creativecommons.org/licenses/by/4.0/deed.en)
