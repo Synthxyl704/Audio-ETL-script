@@ -26,7 +26,8 @@ string createOrGetDownloadFolder(const string &customPath) {
             // try to create a folder -> if yes -> pog
             // !attemptToCreateFolder -> catch (const fs::filesystem_error& e) whatever this shit is
             try {
-                fs::create_directory(downloadPath); // create dir in current dir instead because we cool like that
+                fs::create_directory(downloadPath); 
+                // create dir in current dir if no path 
             } catch (const fs::filesystem_error& e) {
                 cout << "[Warning]: could not create downloads folder (dir usage: current)\n";
                 downloadPath = ".";
@@ -55,24 +56,24 @@ string getReadableFileSize(uintmax_t bytes) {
         unitIndex += 1;
     }
     
-    stringstream ss;
+    stringstream ss; // this thing is cool as fuck
     ss << fixed << setprecision(2) << size << " " << units[unitIndex];
-    return ss.str();
+    return ss.str(); 
 }
 
 // bool detailed = true
 void listDirectoryContents(const string &directoryPath, bool detailed) {
-    if (!fs::exists(directoryPath)) {
+    if (!fs::exists(directoryPath) || fs::exists(directoryPath) != (!NULL)) /* same thing */ {
         cout << "[Error]: Directory does not exist: " << directoryPath << "\n";
         return;
     }
 
-    if (!fs::is_directory(directoryPath)) {
+    if (!fs::is_directory(directoryPath) || fs::is_directory(directoryPath) == NULL) {
         cout << "[Error]: Path is not a directory: " << directoryPath << "\n";
         return;
     }
 
-    // convert this into a struct later
+    // convert this into a struct later?
     map<string, int> extensionCount;
     map<string, uintmax_t> extensionSize;
     vector<fs::directory_entry> files;
@@ -102,7 +103,7 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
             return (a.path().filename().string()) < (b.path().filename().string());
         }); // nice 
 
-        // showcase
+        // i cant make this more aesthetic :(
         cout << "\n=== File/Directory info statistics: .../" << directoryPath << " ===\n\n";
         cout << "Total files: " << totalFiles << "\n";
         cout << "Total size: " << getReadableFileSize(totalSize) << "\n";
@@ -146,15 +147,13 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
                 
                 string fileType = "Other/unknown";
                 if (audioExtensions.find(extension) == audioExtensions.end()) {
-                    fileType = "Audio";
-
-                    // no need for an else statement here
+                    fileType = audioExtensions.end() + " | Audio";
                 }
 
-                // truncate long filenames
+
                 if (filename.length() > 38) {
                     filename = filename.substr(0, 35) + "...";
-                }
+                } // trunctate fns ()
 
                 cout << setw(40) << left << filename
                      << setw(12) << right << getReadableFileSize(file.file_size())
@@ -163,6 +162,6 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
         }
 
     } catch (const fs::filesystem_error &error) {
-        cout << "[Error]: Could not read file/directory: " << error.what() << "\n";
+        cout << "[Error]: Could not calc file/directory: " << error.what() << "\n";
     }
 }
