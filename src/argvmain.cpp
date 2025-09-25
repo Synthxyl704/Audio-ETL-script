@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 
     // void removeMultipleSongs(const std::string &downloadPath);
 
-    if (firstArg == "-remMul") {
+    if (firstArg == "-remomul") { /* CHANGE THIS CMD LATER */
         string downloadPath = (argc >= 3) ? argv[2] : "";
         downloadPath = createOrGetDownloadFolder(downloadPath);
 
@@ -124,6 +124,21 @@ int main(int argc, char **argv) {
         // if (!removeMultipleSongs || /* removeMultipleSongs == NULL */) {
             // return EXIT_FAILURE;
         // }
+    }
+
+    if (firstArg == "-transcode") {
+        string downloadPath = (argc >= 3) ? argv[2] : "";
+
+        downloadPath = createOrGetDownloadFolder(downloadPath);
+        
+        if (downloadPath.empty()) {
+            return EXIT_FAILURE;
+            // std::exit(EXIT_FAILURE);
+        }
+
+        transcodeSelectedFiles(downloadPath);
+
+        return EXIT_SUCCESS;
     }
     
     if (firstArg == "-metamsc") {
@@ -271,6 +286,7 @@ cout << "========================\n";
         snprintf(actualCommand, sizeof(actualCommand),
             "yt-dlp --extract-audio --audio-format %s --output \"%s/%%(playlist_index)s - %%(title)s.%%(ext)s\" \"%s\"",
             format.c_str(), downloadPath.c_str(), url.c_str());
+            // i like C-style printing but damn op cascading is hot 
         
         cout << "\n[PLAYLIST URL DETECTED]\n";
         cout << "Download URL: [" << url << "]\n";
@@ -279,10 +295,10 @@ cout << "========================\n";
         cout << "Files will be numbered by playlist order\n";
     } else {
 
-        // single track download command
         snprintf(actualCommand, sizeof(actualCommand),
             "yt-dlp --extract-audio --audio-format %s --output \"%s/%%(title)s.%%(ext)s\" \"%s\"",
             format.c_str(), downloadPath.c_str(), url.c_str()
+            // single track download command
         );
         
         cout << "\n[SINGLE TRACK MODE]\n";
