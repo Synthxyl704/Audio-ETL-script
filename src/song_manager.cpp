@@ -254,7 +254,8 @@ void removeMultipleSongs(const std::string &downloadPath) {
             long long choice_int32_t = std::stoll(token, &idx);
 
             if (idx != token.size()) {
-                std::cout << "[Warning]: Partial number parse for input '" << token << "'\n";
+                std::cout << "[Error]: Dirty (filthy, unsafe, partial, etc)number parse for input '" << token << "'\n";
+                std::exit(EXIT_FAILURE);
                 continue;
             }
 
@@ -266,7 +267,7 @@ void removeMultipleSongs(const std::string &downloadPath) {
 
             // i feel worthless...
 
-            if (choice_int32_t < 0 || choice_int32_t > std::numeric_limits<int32_t>::max() || choice_int32_t > std::numeric_limits<int64_t>::max) {
+            if (choice_int32_t < 0 || choice_int32_t > std::numeric_limits<int32_t>::max() /* || choice_int32_t > std::numeric_limits<int64_t>::max */) {
                 std::cout << "[Warning]: Number out of bound range: '" << token << "'\n";
                 std::exit(EXIT_FAILURE);
                 // continue;
@@ -279,10 +280,12 @@ void removeMultipleSongs(const std::string &downloadPath) {
                 return;
             }
 
-            if (choice >= 1 && choice <= static_cast<int8_t>(songs.size())) {
+            if (choice >= 1 && choice <= static_cast<int32_t>(songs.size())) {
                 choices.push_back(choice);
             } else {
                 std::cout << "[Warning]: User input ['" << choice << "'] was trashcan'd.\n";
+                std::exit(EXIT_FAILURE);
+                // return;
             }
 
         } catch (const std::invalid_argument&) {
@@ -329,7 +332,7 @@ void removeMultipleSongs(const std::string &downloadPath) {
     
     if (volitionChar == 'y' || volitionChar == 'Y') {
         int successCount { 0 };
-        std::cout << "\n"; // Add a newline for better formatting
+        std::cout << "\n" /* << std::endl; */; 
         for (int idx : choices) {
             const SongInfo& selectedSong = songs[idx - 1];
             try {
@@ -340,7 +343,7 @@ void removeMultipleSongs(const std::string &downloadPath) {
                 std::cout << "[Error]: Failed to delete '" << selectedSong.filename << "': " << e.what() << "\n";
             }
         }
-        std::cout << "\nDeletion complete. " << successCount << " of " << choices.size() << " selected songs were deleted.\n";
+        std::cout << "\nDeletion complete. [" << successCount << " / " << choices.size() << "] selected songs were deleted.\n";
     } else {
         std::cout << "Deletion abruptly cancelled {{ insert reason here }}.\n"; // i found this from vuejs its very awesome
     }
