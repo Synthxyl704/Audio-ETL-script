@@ -7,6 +7,8 @@
 #include <map>
 #include <algorithm>
 #include <set>
+#include <cstdlib>
+#include <limits> 
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -68,18 +70,19 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
         return;
     }
 
-    if (!fs::is_directory(directoryPath) || fs::is_directory(directoryPath) == NULL) {
+    if (!fs::is_directory(directoryPath) /*|| fs::is_directory(directoryPath) == NULL */ ) {
         cout << "[Error]: Path is not a directory: " << directoryPath << "\n";
         return;
     }
 
     // convert this into a struct later?
+    // 9/23 - idea scraped
     map<string, int> extensionCount;
     map<string, uintmax_t> extensionSize;
     vector<fs::directory_entry> files;
     uintmax_t totalSize = 0;
     int totalFiles = 0;
-    set<string> audioExtensions = {"mp3", "wav", "flac", "aac", "ogg", "m4a"};
+    set<string> audioExtensions = {"mp3", "wav", "flac", "aac", "ogg", "m4a", "opus"};
 
     try {
         for (const auto &entry : fs::directory_iterator(directoryPath)) {
@@ -137,31 +140,221 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
             cout << "\nDetailed file listing:\n";
             cout << setw(40) << left << "Filename" 
                  << setw(12) << right << "Size" 
-                 << setw(10) << "F-Type" << "\n";
+                 << setw(10) << "F-Ext/type" << "\n";
             cout << string(62, '-') << "\n";
 
             for (const auto &file : files) {
                 string filename = file.path().filename().string();
                 string extension = file.path().extension().string();
                 transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-                
-                string fileType = "Other/unknown";
-                if (audioExtensions.find(extension) == audioExtensions.end()) {
-                    fileType = audioExtensions.end() + " | Audio";
-                }
 
+                // std::string toLower(const std::string& str) {
+                //    std::string result = str;
+                //    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+                //
+                //    return result;
+                // }               
+                
+                // std::string fileType = "Other/unknown";
+                // if (audioExtensions.find(tolower(extension)) != audioExtensions.end()) {
+                //     fileType = "Audio";
+                // }
+
+                // std::string fileType = "Other/unknown";
+                // if (audioExtensions.find(extension) != audioExtensions.end()) {
+                //     fileType = extension + " | Audio";
+                // } // else { std::shit }
+                
+                string fileType;
+                if (audioExtensions.find(extension) != audioExtensions.end()) {
+                    fileType = extension + " | Audio";
+                } else {
+                //     if (fileType = extension.empty()) {
+                //         fileType = "[no ext found]";
+                //     } else {
+                //         fileType = extension + " | other/undef";
+                //     }
+                // }
+
+                fileType = (extension.empty()) ? "[no extension]" : extension;
+                }
 
                 if (filename.length() > 38) {
                     filename = filename.substr(0, 35) + "...";
                 } // trunctate fns ()
 
-                cout << setw(40) << left << filename
-                     << setw(12) << right << getReadableFileSize(file.file_size())
-                     << setw(10) << fileType << "\n";
+                cout << setw(40) << left << filename << setw(12) << right << getReadableFileSize(file.file_size())
+                     << setw(10) << fileType << /* std::endl << ; */ "\n";
             }
         }
 
     } catch (const fs::filesystem_error &error) {
         cout << "[Error]: Could not calc file/directory: " << error.what() << "\n";
     }
+}
+
+// okay 
+// list available files
+// give the files an index (inc = 0; [<< inc + 1])
+// volition char/stream for user input, will convert to numerics if not ss 
+// invoke ffmpeg for those filex and transcode those file(s) only
+
+vector<fs::path> listAvailableFiles(const string& directoryPath) {
+    vector<fs::path> filePaths;
+    
+    if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+        cout << "[Error]: Directory not found at path: " << directoryPath << "\n";
+        return filePaths; // empty
+    }
+
+    vector<fs::directory_entry> files;
+    for (const auto& entry : fs::directory_iterator(directoryPath)) {
+        if (entry.is_regular_file()) {
+            files.push_back(entry);
+        }
+    }
+
+    sort(files.begin(), files.end(), [](const fs::directory_entry& a, const fs::directory_entry& b) {
+        return a.path().filename().string() < b.path().filename().string();
+    });
+
+    cout << "\n=== Available Files in ~/" << fs::path(directoryPath).filename().string() << " ===\n";
+    cout << string(45, '-') << "\n";
+
+    if (files.empty() || files.size() == 0) {
+        cout << "No files found in this directory.\n";
+        return filePaths;
+    }
+    
+    int index = 1;
+    for (const auto& file : files) {
+        fs::path currentPath = file.path();
+        cout << "[" << setw(2) << right << index << "] " 
+             << setw(30) << left << currentPath.filename().string() 
+             << " (" << getReadableFileSize(file.file_size()) << ")\n";
+        filePaths.push_back(currentPath);
+        index += 1;
+    }
+    cout << string(45, '-') << "\n";
+    
+    return filePaths;
+}
+
+// okay 
+// list available files
+// give the files an index (inc = 0; [<< inc + 1])
+// volition char/stream for user input, will convert to numerics if not ss 
+// invoke ffmpeg for those files and transcode those file(s) only
+
+// if no directory found (handled in main)
+// if no file found?
+
+void transcodeSelectedFiles(const string& directoryPath) {
+    vector<fs::path> availableFiles = listAvailableFiles(directoryPath);
+    if (availableFiles.empty()) return;
+
+    cout << "Enter the indexes of files to transcode (the ones in sq. brackets) | (EG - 6, 9, 420): ";
+
+    string selectionInput;
+    getline(cin, selectionInput);
+
+    set<int> selectedIndices;
+    stringstream ss(selectionInput);
+    string segment;
+
+    while (getline(ss, segment, ',')) {
+        segment.erase(remove_if(segment.begin(), segment.end(), ::isspace), segment.end());
+
+        if (segment.empty()) {
+            continue;
+        } // ;
+
+        try {
+            long long idx = stoll(segment);
+
+            if (idx < 1 || idx > static_cast<long long>(availableFiles.size())) {
+                cout << "[Warning]: Invalid index: [" << idx << "]\n";
+                continue;
+            }
+
+            if (idx > INT32_MAX) {
+                cout << "[INT_OVERFLOW_ERROR]: Index too large to fit: [" << idx << "] \n";
+                continue;
+            }
+
+            selectedIndices.insert(static_cast<int>(idx));
+        } catch (const std::exception& e) {
+            cout << "[Error]: Invalid input: '" << segment << "' -> " << e.what() << "\n";
+            return;
+        }
+    }
+
+    if (selectedIndices.empty()) {
+        cout << "[Info]: No valid files selected.\n";
+        return;
+    }
+
+    cout << "Enter the target audio format (e.g. mp3, flac, wav): ";
+
+    string targetFormat;
+    cin >> targetFormat;
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    if (!targetFormat.empty() && targetFormat[0] == '.') {
+        targetFormat = targetFormat.substr(1);
+    }
+    
+    transform(targetFormat.begin(), targetFormat.end(), targetFormat.begin(), ::tolower);
+    
+    const set<string> validFormats = {"mp3", "flac", "wav", "ogg", "opus", "aac", "m4a"};
+    if (validFormats.find(targetFormat) == validFormats.end()) {
+        cout << "[Error]: Unsupported format: " << targetFormat << "\n";
+        return;
+    }
+
+    cout << "\n=== TRANSCODING WITH FFMPEG ===\n";
+
+    for (int index : selectedIndices) {
+        const fs::path& inputPath = availableFiles[index - 1];
+        fs::path outputPath = inputPath.parent_path() / (inputPath.stem().string() + "." + targetFormat);
+
+        if (inputPath == outputPath) {
+            cout << "[Info]: Skipping " << inputPath.filename() << " (already target format)\n";
+            continue;
+        }
+
+        // UNCOMMENT IF YOU WANT FFMPEG TRANSOCODING LOGS 
+        // char buffer[0x100]; 
+        // while (fgets(buffer, sizeof(buffer), pipe) != nullptr) { 
+            // cout << buffer; 
+        // }
+
+        cout << "Transcoding '" << inputPath.filename().string() << "' -> '" << outputPath.filename().string() << "'\n";
+
+        // CHANGE AS REQUIRED OR CHATGPT THE COMMAND
+        // ffmpeg -i "input.ext" -y "output.format" -hide_banner -threads 4
+        string command = "ffmpeg -i \"" + inputPath.string() + "\" -y \"" + outputPath.string() + "\" -hide_banner -threads 4 2>&1";
+
+        FILE *pipe = popen(command.c_str(), "r");
+        if (!pipe) {
+            std::cerr << "Failed to execute and run FFmpeg, the transcoding process has been terminated due to this.\n" << std::endl;
+            // continue;
+            continue;
+        }
+
+        char buffer[128];
+        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            cout << buffer;
+        }
+
+        int returnCode = pclose(pipe);
+        if (returnCode == 0) {
+            cout << "[PROCESS_INFO_LOG]: Transcoding has been completed by FFmpeg!\n";
+        } else {
+            cout << "[FFmpeg Error]: Exit code: [" << returnCode << "] \n";
+        }
+    }
+
+    cout << "[RE:PROCESS_INFO_LOG]: the codec transcoding has been successful\n";
 }
