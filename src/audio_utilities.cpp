@@ -3,7 +3,8 @@
 #include <algorithm>
 #include <cctype>
 
-std::vector<std::string> supportedAudioFormats = { "mp3", "wav", "flac", "aac", "ogg", "m4a" };
+std::vector<std::string> supportedAudioFormats = { "mp3", "wav", "flac", "aac", "ogg", "m4a", "opus"};
+// 24/xx - added opus
 
 bool isTheFormatSupported(const std::string &format) {
     for (int inc = 0; inc < supportedAudioFormats.size(); inc += 1) { // too lazy for [n] external storage
