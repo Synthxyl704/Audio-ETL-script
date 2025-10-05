@@ -10,6 +10,12 @@
 #include <cstdlib>
 #include <limits> 
 
+// #include "song_manager.h"
+// #include "song_manager.h"
+// #include "audio_utilities.h"
+// #include "file_manager.h"
+
+
 using namespace std;
 namespace fs = std::filesystem;
 
@@ -135,6 +141,7 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
         }
 
         // tabular (normalized) file listing
+        // bro is NOT an RDBM systems joker
         if (detailed && !files.empty()) {
             cout << "\n----------------------------------------\n";
             cout << "\nDetailed file listing:\n";
@@ -143,6 +150,8 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
                  << setw(10) << "F-Ext/type" << "\n";
             cout << string(62, '-') << "\n";
 
+            // fullisade of stream insertions 
+        
             for (const auto &file : files) {
                 string filename = file.path().filename().string();
                 string extension = file.path().extension().string();
@@ -185,11 +194,10 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
 
                 cout << setw(40) << left << filename << setw(12) << right << getReadableFileSize(file.file_size())
                      << setw(10) << fileType << /* std::endl << ; */ "\n";
-            }
-        }
-
+            } // for
+        } // if 
     } catch (const fs::filesystem_error &error) {
-        cout << "[Error]: Could not calc file/directory: " << error.what() << "\n";
+        cout << "[FSYS_READ_ERROR]: Could not calculate specified directory: " << error.what() << "\n";
     }
 }
 
@@ -203,13 +211,13 @@ vector<fs::path> listAvailableFiles(const string& directoryPath) {
     vector<fs::path> filePaths;
     
     if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
-        cout << "[Error]: Directory not found at path: " << directoryPath << "\n";
+        cout << "[FSYS_ERROR]: Directory not found at path: " << directoryPath << "\n";
         return filePaths; // empty
     }
 
     vector<fs::directory_entry> files;
     for (const auto& entry : fs::directory_iterator(directoryPath)) {
-        if (entry.is_regular_file()) {
+        if (entry.is_regular_file()) { // yeah mfs named this "is_regular_file" 
             files.push_back(entry);
         }
     }
@@ -251,7 +259,10 @@ vector<fs::path> listAvailableFiles(const string& directoryPath) {
 
 void transcodeSelectedFiles(const string& directoryPath) {
     vector<fs::path> availableFiles = listAvailableFiles(directoryPath);
-    if (availableFiles.empty()) return;
+    if (availableFiles.empty()) {
+        std::cerr << "[FILE_OPEN_ERROR] Listed directory / list has detected absence of files for transcoding.";
+        return;
+    } 
 
     cout << "Enter the indexes of files to transcode (the ones in sq. brackets) | (EG - 6, 9, 420): ";
 
@@ -267,13 +278,13 @@ void transcodeSelectedFiles(const string& directoryPath) {
 
         if (segment.empty()) {
             continue;
-        } // ;
+        }
 
         try {
             long long idx = stoll(segment);
 
             if (idx < 1 || idx > static_cast<long long>(availableFiles.size())) {
-                cout << "[Warning]: Invalid index: [" << idx << "]\n";
+                cout << "[UIDX_INPUT_ERROR]: Invalid index: [" << idx << "]\n";
                 continue;
             }
 
@@ -284,15 +295,27 @@ void transcodeSelectedFiles(const string& directoryPath) {
 
             selectedIndices.insert(static_cast<int>(idx));
         } catch (const std::exception& e) {
-            cout << "[Error]: Invalid input: '" << segment << "' -> " << e.what() << "\n";
+            cout << "[UIDX_INPUT_ERROR]: Invalid input: '" << segment << "' -> " << e.what() << "\n";
             return;
         }
     }
 
     if (selectedIndices.empty()) {
-        cout << "[Info]: No valid files selected.\n";
+        cout << "[WARN_LOG]: No valid files selected.\n";
         return;
     }
+
+    std::cout << "\n[INFO]: You have selected [" << selectedIndices.size() << "] files for codec transcoding\n\n";
+    for (int fileNameAtIndex : selectedIndices) {
+        std::cout << "-> " << availableFiles[fileNameAtIndex - 1] << std::endl;
+    }
+
+    // std::cout << std::endl; 
+    std::cout << "\n";
+
+    // for (int index : choices) {
+        // std::cout << "-> " << songs[index /* idx */ - 1].filename << "\n";
+    // }
 
     cout << "Enter the target audio format (e.g. mp3, flac, wav): ";
 
@@ -308,10 +331,19 @@ void transcodeSelectedFiles(const string& directoryPath) {
     transform(targetFormat.begin(), targetFormat.end(), targetFormat.begin(), ::tolower);
     
     const set<string> validFormats = {"mp3", "flac", "wav", "ogg", "opus", "aac", "m4a"};
+
     if (validFormats.find(targetFormat) == validFormats.end()) {
-        cout << "[Error]: Unsupported format: " << targetFormat << "\n";
+        cout << "[INPUT_CODEC_ERROR]: Unsupported format: " << targetFormat << "\n";
         return;
     }
+
+    cout << "[TRANSCODE_PROMPT]: Do you wish to remove the prior (codec) file(s) to eradicate file redundancy? (Y/N): ";
+    
+    char removeOriginalChoice;
+    cin >> removeOriginalChoice;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    
+    bool removeOriginal = (removeOriginalChoice == 'Y' || removeOriginalChoice == 'y');
 
     cout << "\n=== TRANSCODING WITH FFMPEG ===\n";
 
@@ -320,26 +352,18 @@ void transcodeSelectedFiles(const string& directoryPath) {
         fs::path outputPath = inputPath.parent_path() / (inputPath.stem().string() + "." + targetFormat);
 
         if (inputPath == outputPath) {
-            cout << "[Info]: Skipping " << inputPath.filename() << " (already target format)\n";
+            cout << "[FFMPEG_TRANSCODE_SEQ]: File transcoding halted - " << inputPath.filename() << " | (already target format)\n";
             continue;
         }
 
-        // UNCOMMENT IF YOU WANT FFMPEG TRANSOCODING LOGS 
-        // char buffer[0x100]; 
-        // while (fgets(buffer, sizeof(buffer), pipe) != nullptr) { 
-            // cout << buffer; 
-        // }
-
         cout << "Transcoding '" << inputPath.filename().string() << "' -> '" << outputPath.filename().string() << "'\n";
 
-        // CHANGE AS REQUIRED OR CHATGPT THE COMMAND
-        // ffmpeg -i "input.ext" -y "output.format" -hide_banner -threads 4
+        // DO NOT TOUCH THIS
         string command = "ffmpeg -i \"" + inputPath.string() + "\" -y \"" + outputPath.string() + "\" -hide_banner -threads 4 2>&1";
 
         FILE *pipe = popen(command.c_str(), "r");
         if (!pipe) {
-            std::cerr << "Failed to execute and run FFmpeg, the transcoding process has been terminated due to this.\n" << std::endl;
-            // continue;
+            std::cerr << "\n\n[FFMPEG_ERROR]: Failed to execute and run FFmpeg, the transcoding process has been terminated due to this.\n" << std::endl;
             continue;
         }
 
@@ -351,10 +375,37 @@ void transcodeSelectedFiles(const string& directoryPath) {
         int returnCode = pclose(pipe);
         if (returnCode == 0) {
             cout << "[PROCESS_INFO_LOG]: Transcoding has been completed by FFmpeg!\n";
+            
+            if (removeOriginal && fs::exists(outputPath)) {
+                try {
+                    if (fs::file_size(outputPath) > 0) {
+                        fs::remove(inputPath);
+                        cout << "\n[TRANSCODE_OPERATION_LOG]: The original file codec has been removed: " << inputPath.filename() << "\n";
+                    } else {
+                        cout << "\n[TRANSCODE_OPERATION_WARNING]: Output file is empty, keeping original file: " << inputPath.filename() << "\n";
+                    }
+                } catch (const fs::filesystem_error& fileSysErr) {
+                    cout << "[FILE_OPS_ERROR]: Failed to remove original file: [" 
+                         << inputPath.filename() 
+                         << "] - " << fileSysErr.what() << "\n";
+                }
+            }
         } else {
-            cout << "[FFmpeg Error]: Exit code: [" << returnCode << "] \n";
+            cout << "[FFMPEG_INTERNAL_ERROR]: Exit code: [" << returnCode << "] \n";
+
+            if (fs::exists(outputPath)) {
+                try {
+                    fs::remove(outputPath); 
+                    cout << "[FFMPEG_CLEANUP_LOG]: Removed incomplete output file: " << outputPath.filename() << "\n";
+                } catch (const fs::filesystem_error& outputPathCleanupErr) {
+                    cout << "[FFMPEG_CLEANUP_ERROR]: Failed to remove incomplete output, manual removal is recommendend: " 
+                         << outputPath.filename() 
+                         << " - " << outputPathCleanupErr.what() 
+                         << std::endl;
+                }
+            }
         }
     }
 
-    cout << "[RE:PROCESS_INFO_LOG]: the codec transcoding has been successful\n";
+    cout << "\n[RE:PROCESS_TERMINATE_LOG]: The codec transcoding process has encountered no errors.\n";
 }
