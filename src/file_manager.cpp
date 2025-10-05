@@ -147,7 +147,7 @@ void listDirectoryContents(const string &directoryPath, bool detailed) {
             cout << "\nDetailed file listing:\n";
             cout << setw(40) << left << "Filename" 
                  << setw(12) << right << "Size" 
-                 << setw(10) << "F-Ext/type" << "\n";
+                 << setw(10) << " F-Ext/type" << "\n";
             cout << string(62, '-') << "\n";
 
             // fullisade of stream insertions 
