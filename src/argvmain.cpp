@@ -79,134 +79,119 @@ int main(int argc, char **argv) {
     string firstArg = argv[1];
 
     // ./main <url> mp3
-    // ./main -
+    // friendship ended with mp3, opus is my best friend now
 
-    if (firstArg == "-smlist") {
-        string downloadPath = (argc >= 3) ? argv[2] : "";
+    signed int commandType = (-1);
+         if (firstArg == "-smlist")     { commandType = 0; }
+    else if (firstArg == "-rem")        { commandType = 1; }
+    else if (firstArg == "-remMul")     { commandType = 2; }
+    else if (firstArg == "-transcode")  { commandType = 3; }
+    else if (firstArg == "-metamsc")    { commandType = 4; }
+    else if (firstArg == "-help")       { commandType = 5; }
+    else if (firstArg.find("LFI_") != std::string::npos) 
+                                        { commandType = 6; }
 
-        downloadPath = createOrGetDownloadFolder(downloadPath);
+    switch (commandType) {
+        case 0: // -smlist
+        {
+            string downloadPath = (argc >= 3) ? argv[2] : "";
+            downloadPath = createOrGetDownloadFolder(downloadPath);
 
-        if (downloadPath.empty()) {
-            return EXIT_FAILURE;
+            if (downloadPath.empty()) {
+                return EXIT_FAILURE;
+            }
+
+            listDownloadedSongs(downloadPath);
+            return EXIT_SUCCESS;
         }
-
-        listDownloadedSongs(downloadPath);
-        return EXIT_SUCCESS;
-    }
-    
-    if (firstArg == "-rem") {
-        string downloadPath = (argc >= 3) ? argv[2] : "";
-
-        downloadPath = createOrGetDownloadFolder(downloadPath);
         
-        if (downloadPath.empty()) {
-            return EXIT_FAILURE;
-        }
+        case 1: // -rem
+        {
+            string downloadPath = (argc >= 3) ? argv[2] : "";
+            downloadPath = createOrGetDownloadFolder(downloadPath);
+            
+            if (downloadPath.empty()) {
+                return EXIT_FAILURE;
+            }
 
-        removeSong(downloadPath);
-        return EXIT_SUCCESS;
-    }
-
-    // void removeMultipleSongs(const std::string &downloadPath);
-
-    if (firstArg == "-remomul") { /* CHANGE THIS CMD LATER */
-        string downloadPath = (argc >= 3) ? argv[2] : "";
-        downloadPath = createOrGetDownloadFolder(downloadPath);
-
-
-        if (downloadPath.empty()) {
-            return EXIT_FAILURE;
-            // std::exit(EXIT_FAILURE);
-        }
-
-        removeMultipleSongs(downloadPath);
-
-        // if (!removeMultipleSongs || /* removeMultipleSongs == NULL */) {
-            // return EXIT_FAILURE;
-        // }
-    }
-
-    if (firstArg == "-transcode") {
-        string downloadPath = (argc >= 3) ? argv[2] : "";
-
-        downloadPath = createOrGetDownloadFolder(downloadPath);
-        
-        if (downloadPath.empty()) {
-            return EXIT_FAILURE;
-            // std::exit(EXIT_FAILURE);
-        }
-
-        transcodeSelectedFiles(downloadPath);
-
-        return EXIT_SUCCESS;
-    }
-    
-    if (firstArg == "-metamsc") {
-        string downloadPath = (argc >= 3) ? argv[2] : "";
-        downloadPath = createOrGetDownloadFolder(downloadPath);
-
-        if (downloadPath.empty()) {
-            return EXIT_FAILURE;
-        }
-
-        showSongMetadata(downloadPath);
-        return EXIT_SUCCESS;
-    }
-
-    if (firstArg == "-help") {
-        printUsage(argv[0]);
-        return EXIT_SUCCESS;
-    }    
-
-    //refactor manually fixed for dynamic boolean changes to LFI_[x] in argv[2]
-    std::string subStr = "LFI_";
-
-    if (firstArg.find(subStr) != std::string::npos) {
-        if (argv[2] == NULL || !argv[2]) {
-            std::cerr << "\nFile/directory to analyse is not specified, specify in argv[2]\n";
+            removeSong(downloadPath);
             return EXIT_SUCCESS;
         }
 
-        std::string downloadPath = argv[2];
+        case 2: // -remMul
+        {
+            string downloadPath = (argc >= 3) ? argv[2] : "";
+            downloadPath = createOrGetDownloadFolder(downloadPath);
 
-        bool detailed = (firstArg.find("t") != std::string::npos);
-        listDirectoryContents(downloadPath, detailed);
+            if (downloadPath.empty()) {
+                return EXIT_FAILURE;
+            }
 
-        return EXIT_SUCCESS;
+            removeMultipleSongs(downloadPath);
+            return EXIT_SUCCESS;
+        }
+
+        case 3: // -transcode
+        {
+            string downloadPath = (argc >= 3) ? argv[2] : "";
+            downloadPath = createOrGetDownloadFolder(downloadPath);
+            
+            if (downloadPath.empty()) {
+                return EXIT_FAILURE;
+            }
+
+            transcodeSelectedFiles(downloadPath);
+            return EXIT_SUCCESS;
+        }
+        
+        case 4: // -metamsc
+        {
+            string downloadPath = (argc >= 3) ? argv[2] : "";
+            downloadPath = createOrGetDownloadFolder(downloadPath);
+
+            if (downloadPath.empty()) {
+                return EXIT_FAILURE;
+            }
+
+            showSongMetadata(downloadPath);
+            return EXIT_SUCCESS;
+        }
+
+        case 5: // -help
+        {
+            printUsage(argv[0]);
+            return EXIT_SUCCESS;
+        }
+
+        case 6: // -LFI_t / -LFI_f commands
+        {
+            // if (argv[2] == NULL || !argv[2]) {
+            //     std::cerr << "\nFile/directory to analyse is not specified, specify in argv[2]\n";
+            //     return EXIT_SUCCESS;
+            // }
+
+            // std::string downloadPath = argv[2];
+            // string downloadPath = (argc >= 3) ? argv[2] : "";
+
+            // CHANGE THE "downloads" IN CASE ITS SET TO YOUR DIRECTORY
+            string downloadPath = (argc >= 3) ? argv[2] : "downloads";
+
+            // if "t" is found, then detailed, else no
+            bool detailed = (firstArg.find("t") != std::string::npos);
+            listDirectoryContents(downloadPath, detailed);
+
+            return EXIT_SUCCESS;
+        }
+
+        default:
+            // n/a
+            break;
     }
-
-    // i cant stop using std::[x] LOL
-
-    // my refactor conditional version in case shit breaks
-    // if (firstArg == "-LFI_f") {
-    //     if (argv[2] == NULL || !argv[2]) { 
-    //         std::cerr << "\nFile/director to analyse is not specified, specify in argv[2]\n";
-    //         return EXIT_SUCCESS;
-    //     }
-
-    //     // listDirectoryContents(const string &directoryPath, bool detailed = true)
-    //     string downloadPath = (argc >= 3) ? argv[2] : "";
-    //     listDirectoryContents(downloadPath, false);
-    
-    //     return EXIT_SUCCESS;
-    // }
-
-    // if (firstArg == "-LFI_t") {
-    //     if (argv[2] == NULL || !argv[2]) { 
-    //         std::cerr << "\nFile/director to analyse is not specified, specify in argv[2]\n";
-    //         return EXIT_SUCCESS;
-    //     }
-
-    //     string downloadPath = (argc >= 3) ? argv[2] : "";
-    //     listDirectoryContents(downloadPath, true);
-
-    //     return EXIT_SUCCESS;
-    // }
 
     // =============== END OF ADDED MORE COMMAND HANDLING ===============
 
     if (argc < 3 || argc > 4) {
-        std::cerr << "((argc < 3 || argc > 4) || INVALID COMMAND: " << argv[1] <<  ")\n\n";
+        std::cerr << "\n((argc < 3 || argc > 4) || INVALID COMMAND: " << argv[1] <<  ")\n\n";
 
         printUsage(argv[0]);
         return EXIT_FAILURE;
@@ -218,18 +203,18 @@ int main(int argc, char **argv) {
 
     // ============== ERROR conditionals ==============
 
-    if (url.length() > 0x400) {
-        cout << "\n\n[Error]: too many characters in [URL], overflow protection | terminating program\n\n";
+    if (url.length() > 0x200 /* 0x400 */) { // CHANGE IN CASE YOU SOMEHOW HAVE A LARGER LINK
+        cout << "\n\n[URL_INT_ERROR]: too many characters in [URL], overflow protection | terminating program\n\n";
         return EXIT_FAILURE;
     }
 
     if (format.length() > 5) {
-        cout << "\n\n[Error]: too many characters in [FORMAT], overflow protection | terminating program\n\n";
+        cout << "\n\n[CODEC_INT_ERROR]: too many characters in [FORMAT], overflow protection | terminating program\n\n";
         return EXIT_FAILURE;
     }
 
     if (!isTheFormatSupported(format) || isTheFormatSupported(format) == false)  {
-        cerr << "[Error]: unsupported format [" << format << "]\n";
+        cerr << "\n[CODEC_ERROR]: unsupported format [" << format << "]\n\n";
         printUsage(argv[0]);
         return EXIT_FAILURE;
     }
@@ -246,19 +231,20 @@ std::string metadataOutput = execCommand(metadataCmd);
 
 std::istringstream metaStream(metadataOutput);
 std::string metaLine;
-std::getline(metaStream, metaLine);  // Only the first line matters
+
+std::getline(metaStream, metaLine);
 std::vector<std::string> metaFields = split(metaLine, '|');
 
-std::string title = "(unknown)";
-std::string artist = "(unknown)";
-std::string duration = "(unknown)";
+std::string title = "[UNKNOWN]";
+std::string artist = "[UNKNOWN]";
+std::string duration = "[UNKNOWN]";
 
 if (metaFields.size() >= 3) {
     title = metaFields[0];
-    artist = !metaFields[1].empty() ? metaFields[1] : "(unknown)";
+    artist = (!metaFields[1].empty()) ? metaFields[1] : "[ERROR_WHILE_FETCHING_MDT]";
     duration = metaFields[2];
 } else {
-    std::cerr << "[Warning]: Could not extract complete metadata for URL.\n";
+    std::cerr << "[WARNING]: PCould not extract complete metadata for URL.\n";
 }
 
 cout << "\n=== [TRACK METADATA] ===\n";
@@ -286,7 +272,6 @@ cout << "========================\n";
         snprintf(actualCommand, sizeof(actualCommand),
             "yt-dlp --extract-audio --audio-format %s --output \"%s/%%(playlist_index)s - %%(title)s.%%(ext)s\" \"%s\"",
             format.c_str(), downloadPath.c_str(), url.c_str());
-            // i like C-style printing but damn op cascading is hot 
         
         cout << "\n[PLAYLIST URL DETECTED]\n";
         cout << "Download URL: [" << url << "]\n";
@@ -295,10 +280,10 @@ cout << "========================\n";
         cout << "Files will be numbered by playlist order\n";
     } else {
 
+        // single track download command
         snprintf(actualCommand, sizeof(actualCommand),
             "yt-dlp --extract-audio --audio-format %s --output \"%s/%%(title)s.%%(ext)s\" \"%s\"",
             format.c_str(), downloadPath.c_str(), url.c_str()
-            // single track download command
         );
         
         cout << "\n[SINGLE TRACK MODE]\n";
