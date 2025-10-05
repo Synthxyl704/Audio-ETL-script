@@ -51,19 +51,19 @@ void isSongRedundant(const string &downloadPath, const string &songTitle) {
             }
 
             // if they want to, the user will proceed or not depending on their choice 
-            
-            std::cout << "[FSYS-CBranch]: Do you wish to proceed regardless of the redundancy?" << endl << endl;
+            // Conseq Branch - the name for the conditional
+            std::cout << "[FSYS-CBranch]: Do you wish to proceed regardless of the music redundancy?" << endl << endl;
 
             char volitionChar;
             std::cout << "[yY/nN]: ";
             std::cin >> volitionChar; 
             if (volitionChar == 'n' || volitionChar == 'N') {
-                cout << "\033[1m" << "[FSYS-FLAG_Cbranch_consequence]:" << "\033[0m" << "Song downloading action exec ceased due to redundancy." << endl;
+                cout << "\033[1m" << "\n[FSYS-FLAG_Cbranch_consequence]:" << "\033[0m" << " File downloading action execution ceased due to redundancy." << endl;
                 // return EXIT_FAILURE; 
                 std::exit(EXIT_FAILURE); 
 
             } else if (volitionChar == 'y' || volitionChar == 'Y') {
-                cout << "[FSYS-FLAG_Cbranch_consequence]: Proceeding with dowloading despite redundancy: " << endl;
+                cout << "\n[FSYS-FLAG_Cbranch_consequence]: Proceeding with dowloading despite redundancy: " << endl;
                 // continue;
             }
         }
@@ -103,13 +103,13 @@ void listDownloadedSongs(const string &downloadPath) {
                 }
             }
         }
-    } catch (const fs::filesystem_error& e) {
-        cout << "[Error]: Could not access directory: " << e.what() << "\n";
+    } catch (const fs::filesystem_error& fileDirAccessErr) {
+        cout << "[FILE_DIRECTORY_ACCESS_ERROR]: Could not access directory: " << fileDirAccessErr.what() << "\n";
         return;
     }
     
     if (songs.empty()) {
-        cout << "No audio files found in the download/told directory.\n";
+        cout << "[LOG]: No audio files found in the download/told directory.\n";
         return;
     }
     
@@ -144,7 +144,7 @@ void removeSong(const string &downloadPath) {
             }
         }
     } catch (const fs::filesystem_error& e) {
-        cout << "[Error]: Directory access failure: " << e.what() << "\n"; // e what?
+        cout << "[ERROR]: Directory access failure: " << e.what() << "\n"; // e what?
         return;
     }
     
@@ -174,7 +174,7 @@ void removeSong(const string &downloadPath) {
     }
     
     if (choice < 1 || choice > static_cast<int>(songs.size())) {
-        cout << "[Error]: Invalid selection.\n";
+        cout << "[ERROR]: Invalid selection.\n";
         return;
     }
     
@@ -190,7 +190,7 @@ void removeSong(const string &downloadPath) {
             fs::remove(selectedSong.fullPath);
             cout << "[SUCCESS]: " << "[ " << selectedSong.filename << " ] " << "(song) deleted successfully.\n";
         } catch (const fs::filesystem_error& e) {
-            cout << "[Error]: File deletion error: " << e.what() << "\n";
+            cout << "[ERROR]: File deletion error: " << e.what() << "\n";
         }
     } else {
         cout << "Deletion cancelled.\n";
@@ -225,12 +225,12 @@ void removeMultipleSongs(const std::string &downloadPath) {
     }
     
     if (songs.empty()) {
-        std::cout << "No music/audio files found, unable to perform deletion process.\n";
+        std::cout << "[LOG]: No music/audio files found, unable to perform deletion process.\n";
         return;
     }
     
     sort(songs.begin(), songs.end(), [](const SongInfo& a, const SongInfo& b) {
-        return (a.filename) < (b.filename);
+        return ((a.filename) < (b.filename)); // what did i do wrong...
     });
     
     std::cout << "\n[REMOVE SONGS - Select songs to delete]\n";
@@ -254,21 +254,21 @@ void removeMultipleSongs(const std::string &downloadPath) {
             long long choice_int32_t = std::stoll(token, &idx);
 
             if (idx != token.size()) {
-                std::cout << "[Error]: Dirty (filthy, unsafe, partial, etc)number parse for input '" << token << "'\n";
-                std::exit(EXIT_FAILURE);
+                std::cout << "[INT_PARSE_ERROR]: Dirty (filthy, unsafe, partial, etc) numerical indexical parse for input '" << token << "'\n";
+                // std::exit(EXIT_FAILURE);
                 continue;
             }
 
             // if (choice_64 < 0 || choice_64 > std::numeric_limits<int64_t>::max()) {
                 // std::cout << "[Warning]: Number out of INT64_MAX range: '" << token << "'\n";
                 // std::exit(EXIT_FAILURE);
-                continue;
+                // continue;
             // }
 
             // i feel worthless...
 
             if (choice_int32_t < 0 || choice_int32_t > std::numeric_limits<int32_t>::max() /* || choice_int32_t > std::numeric_limits<int64_t>::max */) {
-                std::cout << "[Warning]: Number out of bound range: '" << token << "'\n";
+                std::cout << "[ERROR]: Number out of bound range: '" << token << "'\n";
                 std::exit(EXIT_FAILURE);
                 // continue;
             }
@@ -277,30 +277,32 @@ void removeMultipleSongs(const std::string &downloadPath) {
 
             if (choice == 0) {
                 std::cout << "User cancelled song/music removal process\n";
+                // std::exit(EXIT_FAILURE);
                 return;
             }
 
             if (choice >= 1 && choice <= static_cast<int32_t>(songs.size())) {
                 choices.push_back(choice);
             } else {
-                std::cout << "[Warning]: User input ['" << choice << "'] was trashcan'd.\n";
+                std::cout << "[ERROR]: User input ['" << choice << "'] was discarded.\n";
                 std::exit(EXIT_FAILURE);
                 // return;
             }
 
         } catch (const std::invalid_argument&) {
-            std::cout << "[Warning]: Invalid input '" << token << "' ignored.\n";
+            std::cout << "[ERROR]: Invalid input detected: '" << token << "' ignored.\n";
         } catch (const std::out_of_range&) {
-            std::cout << "[Warning]: Number too large: '" << token << "'\n";
+            std::cout << "[ERROR]: Number too large to fit in: '" /* thats what she said */ << token << "'\n";
         }
     }
 
     // i really like NAVI from pressure, i will make my output strings sound like what shed say from now
 
-    if (choices.empty() || choices.size() == 0) /* choices._M_check_len() == ((99 - 100) + 1) */  {  
-        std::cout << "Empty buffer recieved, the removal process has been terminated.\n";
-        std::exit(EXIT_FAILURE);
-        // return;
+    if (choices.empty() /* || choices.size() == 0 */) /* choices._M_check_len() == ((99 - 100) + 1) */  {  
+        std::cout << "[LOG_ERROR_UCC]: " << choices.size() << std::endl; // UCC = User Choice Count
+        std::cout << "[ERROR]: Empty buffer recieved, the removal process has been terminated.\n\n\n";
+        // std::exit(EXIT_FAILURE);
+        return;
     }
 
     // 0 12 1 2 120 323 32
@@ -317,7 +319,7 @@ void removeMultipleSongs(const std::string &downloadPath) {
     sort(choices.begin(), choices.end());
     choices.erase(std::unique(choices.begin(), choices.end()), choices.end());
 
-    std::cout << "\nYou have selected the following music/" << choices.size() << "songs for deletion from your directory: \n";
+    std::cout << "\nYou have selected the following music / [" << choices.size() << "] songs for deletion from your directory: \n";
 
     std::cout << "--------------------------------------------------\n";
     for (int index : choices) {
@@ -325,10 +327,12 @@ void removeMultipleSongs(const std::string &downloadPath) {
     }
     std::cout << "--------------------------------------------------\n";
 
-    std::cout << "\nAre you sure you want to permanently delete these musics/songs? | (yY/nN): "; // does "musics" even exist as a word? 
+    std::cout << "\nDo you wish to permanently delete these musics/songs from your list? | (yY/nN): "; // does "musics" even exist as a word? 
 
     char volitionChar{};
     std::cin >> volitionChar;
+
+    // THE CODE QUALITY SUCKSSSSSSSS AAAAAAAAAAAAAAA 
     
     if (volitionChar == 'y' || volitionChar == 'Y') {
         int successCount { 0 };
@@ -337,14 +341,16 @@ void removeMultipleSongs(const std::string &downloadPath) {
             const SongInfo& selectedSong = songs[idx - 1];
             try {
                 fs::remove(selectedSong.fullPath);
-                std::cout << "[SUCCESS]: Deleted file: " << selectedSong.filename << "'.\n";
+                std::cout << "[SONG_RM_SUCCESS]: Deleted file: " << selectedSong.filename << "'.\n";
                 successCount += 1;
-            } catch (const fs::filesystem_error& e) {
-                std::cout << "[Error]: Failed to delete '" << selectedSong.filename << "': " << e.what() << "\n";
+            } catch (const fs::filesystem_error& songDeletionErr) {
+                std::cout << "[ERROR]: Failed to delete '" << selectedSong.filename << "' | " << songDeletionErr.what() << "\n";
             }
         }
-        std::cout << "\nDeletion complete. [" << successCount << " / " << choices.size() << "] selected songs were deleted.\n";
+        std::cout << "\n[LOG]: Deletion complete. [" << successCount << " / " << choices.size() << "] selected songs were deleted.\n";
+        // std::exit(EXIT_SUCCESS);
+        return;
     } else {
-        std::cout << "Deletion abruptly cancelled {{ insert reason here }}.\n"; // i found this from vuejs its very awesome
+        std::cout << "[WARNING]: Deletion abruptly cancelled {{ insert reason here }}.\n"; // i found this from vuejs its very awesome
     }
 }
