@@ -60,18 +60,24 @@ if the `argv[3]` is not specified, it will auto create a "downloads" named folde
 ./main -LFI_f <folder/directory> // THIS WILL NOT SHOW DETAILED INFO
 ```
 
+6. Remove multiple songs in one command
+```
+./main -remMul <index_1> <index_2> ... <index_n>
+```
+
+7. Transcode existing music files (example: XXX.mp3 to XXX.opus with actual codec change)
+```
+./main -transcode <index_1>, <index_2>, <index_n>
+```
+
 <hr>
 
 ## UPD/RR logs:
 
 -> 02/09/25 [FIXED] | `-smlist` listed dates may be incorrect at times for certain/random songs. [ !Highly unlikely! ] <br>
 -> `-LFI_t` is restricted to only showing you the detailed version of directory metadata, anything else that isnt 't' will automatically show you the non-detailed version.
-> [!NOTE]
-> If you wish for this flexibility truncation, please uncomment the conditional code block (~line 135) in `argvmain.cpp` and comment/remove the standard refactor.
 
 ## P-TODO: <br> 
--> Add codec remuxing/transcode to another codec as per user wants, might be the entire file? or one song, or multiple? <br> 
--> Allow the user to delete multiple songs at once, too much time consuming with only 1/manual deletion <br> 
 -> Maybe improve aesthetics on menu, idk how to do that though
 
 ## License
