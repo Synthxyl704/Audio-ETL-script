@@ -57,17 +57,52 @@ void isSongRedundant(const string &downloadPath, const string &songTitle) {
             char volitionChar;
             std::cout << "[yY/nN]: ";
             std::cin >> volitionChar; 
-            if (volitionChar == 'n' || volitionChar == 'N') {
-                cout << "\033[1m" << "\n[FSYS-FLAG_Cbranch_consequence]:" << "\033[0m" << " File downloading action execution ceased due to redundancy." << endl;
-                // return EXIT_FAILURE; 
-                std::exit(EXIT_FAILURE); 
 
-            } else if (volitionChar == 'y' || volitionChar == 'Y') {
-                cout << "\n[FSYS-FLAG_Cbranch_consequence]: Proceeding with dowloading despite redundancy: " << endl;
-                // continue;
+            switch (volitionChar){
+                case 'y':
+                    cout << "\n[FSYS-FLAG_Cbranch_consequence]: Proceeding with dowloading despite redundancy: " << endl;
+                    break;
+
+                case 'Y':
+                    cout << "\n[FSYS-FLAG_Cbranch_consequence]: Proceeding with dowloading despite redundancy: " << endl;
+                    break;
+
+                case 'n':
+                    std::cout << "\033[1m" << "\n[FSYS-FLAG_Cbranch_consequence]:" << "\033[0m" << " File downloading action execution ceased due to redundancy." << endl;
+                    // return EXIT_FAILURE; 
+                    std::exit(EXIT_FAILURE); 
+
+                    break; // why did i put this lmao
+
+                case 'N':
+                    std::cout << "\033[1m" << "\n[FSYS-FLAG_Cbranch_consequence]:" << "\033[0m" << " File downloading action execution ceased due to redundancy." << endl;
+                    // return EXIT_FAILURE; 
+                    std::exit(EXIT_FAILURE); 
+
+                    break;
+
+                default:
+                    // std::cout << volitionChar;
+                    std::cerr << "\n[FSYS_INPUT_ERROR]: Dirty / invalid choice detected in buffer" << std::endl;
+                    std::exit(EXIT_FAILURE);
+                    
+                    break;
             }
+
+            // if (volitionChar == 'n' || volitionChar == 'N') {
+            //     cout << "\033[1m" << "\n[FSYS-FLAG_Cbranch_consequence]:" << "\033[0m" << " File downloading action execution ceased due to redundancy." << endl;
+            //     // return EXIT_FAILURE; 
+            //     std::exit(EXIT_FAILURE); 
+
+            // } else if (volitionChar == 'y' || volitionChar == 'Y') {
+            //     cout << "\n[FSYS-FLAG_Cbranch_consequence]: Proceeding with dowloading despite redundancy: " << endl;
+            //     // continue;
+            // } else {
+            //     std::cerr << "\n[FSYS_INPUT_ERROR]: Dirty / invalid choice detected in buffer" << std::endl;
+            //     std::exit(EXIT_FAILURE);
+            // }
         }
-    } 
+    } // why does this brace end like this
 
 void listDownloadedSongs(const string &downloadPath) {
     cout << "\n[DOWNLOADED SONGS in: " << downloadPath << "]\n";
