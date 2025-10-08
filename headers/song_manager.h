@@ -15,5 +15,6 @@ void removeMultipleSongs(const std::string &downloadPath);
 
 // ---
 void isSongRedundant(const std::string &downloadPath, const std::string &songTitle);
+void searchForSong(const std::string &downloadPath, const std::string &tokenQuery);
 
 #endif 
