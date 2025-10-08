@@ -88,8 +88,9 @@ int main(int argc, char **argv) {
     else if (firstArg == "-transcode")  { commandType = 3; }
     else if (firstArg == "-metamsc")    { commandType = 4; }
     else if (firstArg == "-help")       { commandType = 5; }
+    else if (firstArg == "-search")     { commandType = 6;  }
     else if (firstArg.find("LFI_") != std::string::npos) 
-                                        { commandType = 6; }
+                                        { commandType = 7; }
 
     switch (commandType) {
         case 0: // -smlist
@@ -165,7 +166,20 @@ int main(int argc, char **argv) {
 
         case 6: // -LFI_t / -LFI_f commands
         {
-            // if (argv[2] == NULL || !argv[2]) {
+
+           // -search <insert_query_token_here>
+           // argv[2] = tokenQuery
+           // argv[3] = directory = downloadPath
+
+           string downloadPath = (argc >= 4) ? argv[3] : "downloads";
+           searchForSong(downloadPath, static_cast<std::string>(argv[2]));
+
+           return EXIT_SUCCESS;
+        }
+
+        case 7: 
+        {
+             // if (argv[2] == NULL || !argv[2]) {
             //     std::cerr << "\nFile/directory to analyse is not specified, specify in argv[2]\n";
             //     return EXIT_SUCCESS;
             // }
