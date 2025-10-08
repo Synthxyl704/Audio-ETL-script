@@ -12,6 +12,125 @@
 using namespace std;
 namespace fs = std::filesystem;
 
+void searchForSong(const string &downloadPath, const string &tokenQuery) {
+    /*
+        token query
+        find substring inside the music title
+
+        tokenQuery = substring inside main string expression
+        if std::vector<std::string> tokenQuerySearchResult = songFile.find(tokenQuery);
+    */
+
+    std::vector<std::filesystem::path> songTitleInText;
+    std::vector<std::string> tokenQuerySearchResult;
+
+    std::vector<std::string> searchTokens; // user_input_parse
+    std::string currentToken; 
+
+    /*
+
+    ./main -search im_sorry_for_everything
+
+    t1 = im -> detect "_" -> clear
+    t2 = sorry -> repeat -> clear
+    t3 = for -> iterate -> clear
+    t4 = everything -> reiterate -> clear
+
+    i = NUSC
+    m = NUSC
+    + = PUSC
+    ...
+    ..
+    .
+
+    */
+    
+    for (char checkUnderscoreBuffer : tokenQuery) {
+        if (checkUnderscoreBuffer == '_') {
+            if (!currentToken.empty()) {
+                searchTokens.push_back(currentToken);
+                currentToken.clear();
+            }
+        } else {
+            currentToken += checkUnderscoreBuffer;
+        }
+    }
+
+    /*  could use argc/argv with spaces but thatd be suboptimal, this parsing is fine */
+
+    if (!currentToken.empty()) {
+        searchTokens.push_back(currentToken);
+    } // handle the last token since there is no underscore on the last one regardless of input
+
+    std::cout << "[TOKEN_PARSE_LOG]: Parsed {" << searchTokens.size() << "} tokens: ";
+
+    for (const auto& token : searchTokens) {
+        std::cout << "'" << token << "' ";
+    }
+
+    std::cout << "\n" << std::endl;
+
+    /* unsigned */ uint16_t tokenQuerySearchFileInclusionCount{ 0 }; 
+    /* unsigned */ uint16_t FSYS_INDEX_VIA_MANUAL_ITERATION_INCREMENT /* shitty ass variable name */ { 0 }; 
+
+    try {
+        std::vector<std::filesystem::path> allFiles;
+        for (const auto &songCheckEntry : filesystem::directory_iterator(downloadPath)) {
+            if (songCheckEntry.is_regular_file()) {
+                allFiles.push_back(songCheckEntry.path());
+            }
+        }
+        
+        std::sort(allFiles.begin(), allFiles.end(), [](const std::filesystem::path &a, const std::filesystem::path &b) {
+            return (a.filename().string() < b.filename().string());
+        });
+
+        for (const auto &filePath : allFiles) {
+            std::string audioFileName = filePath.filename().string();
+            std::string audioFileNameLower = audioFileName;
+            
+            // case-insensitive search
+            std::transform(audioFileNameLower.begin(), audioFileNameLower.end(), audioFileNameLower.begin(), ::tolower);
+
+            bool matchesAnyToken = false;
+            
+            for (const auto& token : searchTokens) {
+                std::string tokenLower = token;
+                std::transform(tokenLower.begin(), tokenLower.end(), tokenLower.begin(), ::tolower);
+                
+                if (audioFileNameLower.find(tokenLower) != std::string::npos) {
+                    matchesAnyToken = true;
+                    break;
+                }
+            }
+
+            FSYS_INDEX_VIA_MANUAL_ITERATION_INCREMENT += 1;
+
+            if (matchesAnyToken) {
+                tokenQuerySearchFileInclusionCount += 1;
+                tokenQuerySearchResult.push_back(audioFileName);
+                std::cout << "FSYS-Index - " << "[" << (FSYS_INDEX_VIA_MANUAL_ITERATION_INCREMENT) << "]: " << audioFileName << std::endl;
+            }
+        }
+
+        if (tokenQuerySearchFileInclusionCount == 0) {
+            std::cout << "\n[SEARCH_TOKEN_LOG]: Didn't find any files regarding USER_SEARCH_TOKEN={{ " << tokenQuery << "}}" << std::endl;
+            return;
+        }
+        
+    } catch (const filesystem::filesystem_error &FSYS_TOKEN_SEARCH_ERROR) {
+        std::cerr << "\n\n[FSYS_MUSIC_SEARCH_ERROR]: token query has been neutralized due to file system scrutiny error | \n\n" << FSYS_TOKEN_SEARCH_ERROR.what();
+        return;
+    }
+
+    std::cout << " \n=== " << "[SEARCH_TOKEN_LOG] Search query results for: { " << tokenQuery << " } | Found " << tokenQuerySearchFileInclusionCount << " matches === " << std::endl;
+
+    // std::cout << "\nMatching files:" << std::endl;
+    // for (const auto& result : tokenQuerySearchResult) {
+    //     std::cout << "  - " << result << std::endl;
+    // }
+}
+
 // how do i parse the song title seperately?
 void isSongRedundant(const string &downloadPath, const string &songTitle) {
     // store extracted metadata filename in vec
@@ -109,6 +228,18 @@ void listDownloadedSongs(const string &downloadPath) {
     cout << "========================================\n";
     
     vector<SongInfo> songs;
+
+// const int ip_priority = 30;
+// const char *const ip_extensions[] = {
+//     "aa", "aac", "ac3", "aif", "aifc", "aiff", "ape", "au", "dsf",          
+//     "fla", "flac", "m4a", "m4b", "mka", "mkv", "mp+", "mp2", "mp3",         
+//     "mp4", "mpc", "mpp", "ogg", "opus", "shn", "tak", "tta", "wav",         
+//     "webm", "wma", "wv",
+// #ifdef USE_FALLBACK_IP
+//     "*",
+// #endif
+//     NULL
+// };
 
     // file ext
     // file create time
