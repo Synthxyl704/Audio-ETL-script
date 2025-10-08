@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
             return EXIT_SUCCESS;
         }
 
-        case 6: // -LFI_t / -LFI_f commands
+        case 6: // -search
         {
 
            // -search <insert_query_token_here>
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
            return EXIT_SUCCESS;
         }
 
-        case 7: 
+        case 7: // -LFI_t / -LFI_f 
         {
              // if (argv[2] == NULL || !argv[2]) {
             //     std::cerr << "\nFile/directory to analyse is not specified, specify in argv[2]\n";
