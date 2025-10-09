@@ -1,9 +1,9 @@
-# AFF ETL script
-Nothing fancy, just a simple intermediate ETL-type script for converting youtube, soundcloud & more playlists and videos to audio file formats set to your directory. <br>
+# iSonic - A pretty simple 2 use audio ETL program
+Nothing fancy, just a simple intermediate ETL-type program for converting youtube, soundcloud & more playlists and videos to audio file formats set to your directory. <br>
 <hr>
 
 > [!NOTE]
-> This script is mostly done with what it is supposed to do, please do message me bugs/any tweaks to make, if I am alive I will definitely respond to you back. <br>
+> This program is mostly done with what it is supposed to do, please do message me bugs/any tweaks to make, if I am alive I will definitely respond to you back. <br>
 > Some more fun features will still be added as passion features because I honestly had a lot of fun making this. <br>
 
 <hr>
@@ -12,7 +12,7 @@ Nothing fancy, just a simple intermediate ETL-type script for converting youtube
 
 Clone the project using this cmd in bash:
 ```bash
-git clone https://github.com/Synthxyl704/Audio-ETL-script
+git clone https://github.com/Synthxyl704/iSonic-ETL
 ```
 
 CMake guide (simple, execute sequentially if you wish to)
@@ -60,7 +60,7 @@ if the `argv[3]` is not specified, it will auto create a "downloads" named folde
 ./main -LFI_f <folder/directory> // THIS WILL NOT SHOW DETAILED INFO
 ```
 
-6. Remove multiple songs in one command
+6. Remove multiple files in one command
 ```
 ./main -remMul <index_1> <index_2> ... <index_n>
 ```
@@ -68,6 +68,11 @@ if the `argv[3]` is not specified, it will auto create a "downloads" named folde
 7. Transcode existing music files (example: XXX.mp3 to XXX.opus with actual codec change)
 ```
 ./main -transcode <index_1>, <index_2>, <index_n>
+```
+
+8. Search for music files (parses tokens seperately so that you can get all files with even one analysed or matching token in them)
+```
+./main -search tokenOne_tokenTwo_tokenThree
 ```
 
 <hr>
