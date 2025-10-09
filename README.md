@@ -1,4 +1,4 @@
-# iSonic - A pretty simple 2 use audio ETL program
+# iSonic - audio ETL program
 Nothing fancy, just a simple intermediate ETL-type program for converting youtube, soundcloud & more playlists and videos to audio file formats set to your directory. <br>
 <hr>
 
